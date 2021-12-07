@@ -1,0 +1,20 @@
+com/codegym/model/SmartPhone.java
+ com.codegym.model.SmartPhone
+com/codegym/repo/ISmartPhoneRepository.java
+ com.codegym.repo.ISmartPhoneRepository
+com/codegym/service/smartPhone/ISmartPhoneService.java
+ com.codegym.service.smartPhone.ISmartPhoneService
+com/codegym/config/AppInitializer.java
+ com.codegym.config.AppInitializer
+com/codegym/service/IService.java
+ com.codegym.service.IService
+com/codegym/aspect/MyLogger.java
+ com.codegym.aspect.MyLogger
+com/codegym/formatter/PhoneFormatter.java
+ com.codegym.formatter.PhoneFormatter
+com/codegym/service/smartPhone/SmartPhoneService.java
+ com.codegym.service.smartPhone.SmartPhoneService
+com/codegym/config/AppConfiguration.java
+ com.codegym.config.AppConfiguration
+com/codegym/controller/smartPhone/SmartPhoneController.java
+ com.codegym.controller.smartPhone.SmartPhoneController

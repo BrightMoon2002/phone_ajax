@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="/layout :: head">
+    <meta charset="UTF-8">
+    <title>HDPhone</title>
+</head>
+<body>
+<h3>HDStore</h3>
+<h5>SmartPhone</h5>
+<form id="updatePhone">
+    <input type="text" id="producer" placeholder="Manufacturer">
+    <input type="text" id="model" placeholder="model">
+    <input type="number" id="price" placeholder="price">
+    <input type="submit" value="Add" onclick="createNew()">
+</form>
+<table id="smartphones">
+    <caption>List Phone HDStore</caption>
+    <thread>
+        <tr>
+            <th>Manufacturer</th>
+            <th>Model</th>
+            <th>Price</th>
+            <th>Delete</th>
+            <th>Update</th>
+        </tr>
+    </thread>
+    <th:block th:each="s : ${smartphoneList}">
+        <tr>
+            <td th:text="${s.producer}"></td>
+            <td th:text="${s.model}"></td>
+            <td th:text="${s.price}"></td>
+            <td>
+                <button class="deleteClass" type="submit" th:value="${s.getId()}" onclick="deletePhone(this)">Delete
+                </button>
+            </td>
+            <td>
+                <button class="editClass" type="submit" th:value="${s.getId()}" onclick="showEditPhone(this)">Edit
+                </button>
+            </td>
+        </tr>
+    </th:block>
+</table>
+
+<footer th:replace="/layout :: footer"></footer>
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script>
+    function createNew() {
+        //lấy dư liệu
+        let producer = $('#producer').val();
+        let price = $('#price').val();
+        let model = $('#model').val();
+        //tạo đối tượng mới
+
+        let newPhone = {
+            producer: producer,
+            model: model,
+            price: price
+        };
+
+        // gọi ajax
+        $.ajax({
+            headers: {
+                'Accept': 'application/json',
+                "Content-Type": 'application/json'
+            },
+            type: "POST",
+            data: JSON.stringify(newPhone),
+            url: "/smartphones",
+            success: successCreate
+        });
+        event.preventDefault();
+    };
+
+    //tạo function khi create thành công để ghi lại ra list không cần tải lại trang
+
+    function successCreate() {
+        //khai báo ajax
+        $.ajax({
+            type: "GET",
+            url: "/smartphones/",
+            success: function (smartphoneList) {
+                let content2 = '<form id="updatePhone">' +
+                    '<input type="text" id="producer" placeholder="Manufacturer">\n' +
+                    '<input type="text" id="model" placeholder="model">\n' +
+                    '<input type="number" id="price" placeholder="price">\n' +
+                    '<input type="submit" value="Add" onClick="createNew()">\n' +
+                    '</form>';
+                let content = '<tr>\n' +
+                    '<th>Manufacturer</th>\n' +
+                    '<th>Model</th>\n' +
+                    '<th>Price</th>\n' +
+                    '<th>Delete</th>\n' +
+                    '<th>Edit</th>\n' +
+                    '</tr>';
+                for (let i = 0; i < smartphoneList.length; i++) {
+                    content += getSmartphone(smartphoneList[i]);
+                }
+                document.getElementById('smartphones').innerHTML = content;
+                document.getElementById('updatePhone').innerHTML = content2;
+            }
+        });
+    }
+
+    function getSmartphone(smartphone) {
+        return `<tr><td>${smartphone.producer}</td><td>${smartphone.model}</td><td>${smartphone.price}</td>` +
+            `<td><button class="deletePhone" type="submit" value="${smartphone.id}" onclick="deletePhone(this)">Delete</button></td>` +
+            `<td><button class="editPhone" type="submit" value="${smartphone.id}" onclick="showEditPhone(this)">Edit</button></td></tr>`;
+    }
+
+    function deletePhone(id) {
+        let idPhone = id.getAttribute("value");
+        $.ajax({
+            type: "DELETE",
+            url: "/smartphones/" + idPhone,
+            success: successCreate
+        });
+    }
+
+    function showEditPhone(id) {
+        let idPhone = id.getAttribute("value");
+        $.ajax({
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            type: "GET",
+            url: "/smartphones/" + idPhone,
+            success: function (data) {
+                let content = '<form>\n' +
+                    '<table>' +
+                    '<tr>' +
+                    '<td><input type="hidden" id="id" value="' + data.id + '"></td>\n' +
+                    '<td><input type="text" id="producer" value="' + data.producer + '"></td>\n' +
+                    '<td><input type="text" id="model" value="' + data.model + '"></td>\n' +
+                    '<td><input type="number" id="price" value="' + data.price + '"></td>\n' +
+                    '   </tr>\n' +
+                    '</table>\n' +
+                    '<button type="submit" value="Edit" onclick="editPhone()">Edit</button>'
+                '</form>';
+                document.getElementById('updatePhone').innerHTML = content;
+            }
+        });
+        event.preventDefault();
+    }
+
+    function editPhone() {
+        let id = $('#id').val();
+        let producer = $('#producer').val();
+        let price = $('#price').val();
+        let model = $('#model').val();
+        //tạo đối tượng mới
+
+        let newPhone = {
+            id: id,
+            producer: producer,
+            model: model,
+            price: price
+        };
+
+        // gọi ajax
+        $.ajax({
+            headers: {
+                'Accept': 'application/json',
+                "Content-Type": 'application/json'
+            },
+            type: "PUT",
+            data: JSON.stringify(newPhone),
+            url: "/smartphones",
+            success: successCreate
+        });
+        event.preventDefault();
+    }
+
+</script>
+</body>
+</html>
